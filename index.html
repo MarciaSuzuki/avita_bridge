@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AViTA Bridge – Sound ↔ Meaning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-green: #3F3E20;
+            --brand-terracotta: #BE4A01;
+            --brand-sand: #C5C29F;
+            --bg: #F6F5EB;
+            --bg-card: #ffffff;
+            --text-dark: #0A0703;
+            
+            --color-acoustic: #6366f1;
+            --color-semantic: #10b981;
+            --color-bridge: #f59e0b;
+            --color-lemma: #777D45;
+            --color-morpheme: #89AAA3;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Nunito', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-dark); 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: var(--brand-green);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            color: #F6F5EB;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .logo-badge {
+            background: var(--color-bridge);
+            color: var(--brand-green);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 800;
+        }
+        
+        .segment-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .segment-nav button {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .segment-nav button:hover { background: rgba(255,255,255,0.25); }
+        .segment-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .segment-info { 
+            font-size: 0.9rem; 
+            min-width: 90px; 
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 16px;
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* ============ SETUP SCREEN ============ */
+        .setup-screen {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .setup-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        
+        .setup-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .setup-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+            color: var(--brand-green);
+        }
+        
+        .setup-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        /* Bridge diagram */
+        .bridge-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .bridge-box {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        .bridge-box.acoustic {
+            background: var(--color-acoustic);
+            color: white;
+        }
+        
+        .bridge-box.semantic {
+            background: var(--color-semantic);
+            color: white;
+        }
+        
+        .bridge-arrow {
+            font-size: 1.5rem;
+            color: var(--color-bridge);
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--brand-sand);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: white;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--brand-terracotta);
+        }
+        
+        .file-drop {
+            border: 2px dashed var(--brand-sand);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(197, 194, 159, 0.1);
+        }
+        
+        .file-drop:hover {
+            border-color: var(--brand-terracotta);
+            background: rgba(190, 74, 1, 0.05);
+        }
+        
+        .file-drop.has-file {
+            border-color: var(--color-semantic);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .file-drop-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .file-drop-text {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .file-drop-name {
+            font-weight: 700;
+            color: var(--color-semantic);
+            margin-top: 8px;
+        }
+        
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--brand-terracotta);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.15s;
+        }
+        
+        .start-btn:hover {
+            background: #a54001;
+            transform: translateY(-2px);
+        }
+        
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .demo-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.85rem;
+        }
+        
+        .demo-link a {
+            color: var(--brand-terracotta);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        /* ============ TAGGING SCREEN ============ */
+        .audio-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(63, 62, 32, 0.08);
+        }
+        
+        .segment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .segment-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--brand-green);
+        }
+        
+        .segment-duration {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        
+        /* Audio controls */
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--brand-green);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(63, 62, 32, 0.2);
+            transition: transform 0.15s;
+        }
+        
+        .play-btn:hover { transform: scale(1.05); }
+        .play-btn:active { transform: scale(0.95); }
+        
+        .play-icon {
+            width: 0; height: 0;
+            border-left: 16px solid #F6F5EB;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            margin-left: 4px;
+        }
+        
+        .pause-icon {
+            width: 14px; height: 18px;
+            border-left: 4px solid #F6F5EB;
+            border-right: 4px solid #F6F5EB;
+        }
+        
+        .speed-btn {
+            background: rgba(63, 62, 32, 0.1);
+            border: 1px solid var(--brand-sand);
+            color: var(--brand-green);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .time-display {
+            font-size: 0.9rem;
+            color: var(--brand-green);
+            min-width: 90px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* ============ THE BRIDGE VISUALIZATION ============ */
+        .bridge-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(63, 62, 32, 0.08);
+        }
+        
+        .bridge-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .bridge-title-icon {
+            color: var(--color-bridge);
+        }
+        
+        /* Waveform with unit overlay */
+        .waveform-container {
+            position: relative;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+            border-radius: 8px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        .waveform-bars {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: 100%;
+            padding: 0 8px;
+            pointer-events: none;
+        }
+        
+        .waveform-bar {
+            width: 3px;
+            background: var(--color-acoustic);
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+        
+        .playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--brand-terracotta);
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 6px rgba(190, 74, 1, 0.5);
+        }
+        
+        .selection-region {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background: rgba(245, 158, 11, 0.25);
+            border-left: 2px solid var(--color-bridge);
+            border-right: 2px solid var(--color-bridge);
+            pointer-events: none;
+        }
+        
+        /* Tagged regions */
+        .tagged-region {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            overflow: hidden;
+            padding: 0 4px;
+        }
+        
+        .tagged-region.lemma {
+            background: rgba(119, 125, 69, 0.25);
+            border: 2px solid var(--color-lemma);
+            color: var(--color-lemma);
+        }
+        
+        .tagged-region.morpheme {
+            background: rgba(137, 170, 163, 0.25);
+            border: 2px solid var(--color-morpheme);
+            color: var(--color-morpheme);
+        }
+        
+        .tagged-region:hover {
+            transform: scaleY(1.05);
+        }
+        
+        .tagged-region .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: var(--brand-terracotta);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 0.6rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tagged-region:hover .delete-btn {
+            display: flex;
+        }
+        
+        /* Acoustic unit track */
+        .unit-track {
+            height: 36px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 4px 8px;
+            gap: 2px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+        }
+        
+        .unit-chip {
+            background: var(--color-acoustic);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .unit-chip:hover {
+            transform: scale(1.1);
+        }
+        
+        .unit-chip.selected {
+            background: var(--color-bridge);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-bridge);
+        }
+        
+        .unit-chip.in-selection {
+            background: var(--color-bridge);
+        }
+        
+        /* Time markers */
+        .time-markers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 4px;
+            padding: 0 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* ============ TAGGING PANEL ============ */
+        .tagging-panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(63, 62, 32, 0.08);
+            display: none;
+        }
+        
+        .tagging-panel.visible {
+            display: block;
+        }
+        
+        .selection-info-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .selection-stat {
+            background: rgba(245, 158, 11, 0.1);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .selection-stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .selection-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--color-bridge);
+        }
+        
+        .selection-stat-value.units {
+            font-size: 0.8rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Play selection button */
+        .play-selection-btn {
+            background: var(--color-bridge);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .play-selection-btn:hover {
+            background: #d97706;
+        }
+        
+        /* Type toggle */
+        .type-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+            font-weight: 600;
+        }
+        
+        .type-btn:hover {
+            border-color: #bbb;
+        }
+        
+        .type-btn.active.lemma {
+            border-color: var(--color-lemma);
+            background: rgba(119, 125, 69, 0.1);
+            color: var(--color-lemma);
+        }
+        
+        .type-btn.active.morpheme {
+            border-color: var(--color-morpheme);
+            background: rgba(137, 170, 163, 0.1);
+            color: var(--color-morpheme);
+        }
+        
+        .type-btn-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .type-btn-label {
+            font-size: 0.85rem;
+        }
+        
+        /* Semantic question */
+        .semantic-question {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .semantic-question-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-semantic);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .semantic-question-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--brand-green);
+        }
+        
+        /* Label input */
+        .label-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .label-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .label-input:focus {
+            outline: none;
+            border-color: var(--color-bridge);
+        }
+        
+        .add-tag-btn {
+            background: var(--color-semantic);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .add-tag-btn:hover {
+            background: #059669;
+        }
+        
+        .add-tag-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Morpheme palette */
+        .morpheme-palette {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 14px;
+            background: rgba(137, 170, 163, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(137, 170, 163, 0.3);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .morpheme-palette.visible {
+            display: flex;
+        }
+        
+        .morpheme-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .morpheme-section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-morpheme);
+            font-weight: 700;
+        }
+        
+        .morpheme-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .morpheme-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(137, 170, 163, 0.5);
+            background: white;
+            color: var(--color-morpheme);
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .morpheme-btn:hover {
+            background: rgba(137, 170, 163, 0.15);
+            border-color: var(--color-morpheme);
+        }
+        
+        .morpheme-btn.selected {
+            background: var(--color-morpheme);
+            color: white;
+            border-color: var(--color-morpheme);
+        }
+        
+        /* ============ TAGGED ITEMS LIST ============ */
+        .tagged-list {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(63, 62, 32, 0.08);
+        }
+        
+        .tagged-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .tagged-list-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+        
+        .tagged-count {
+            font-size: 0.85rem;
+            color: var(--color-semantic);
+            font-weight: 600;
+        }
+        
+        .tagged-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .tagged-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(197, 194, 159, 0.1);
+            border-radius: 10px;
+            transition: all 0.15s;
+        }
+        
+        .tagged-item:hover {
+            background: rgba(197, 194, 159, 0.2);
+        }
+        
+        .tagged-item-play {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--brand-green);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .tagged-item-play .mini-play {
+            width: 0; height: 0;
+            border-left: 8px solid white;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            margin-left: 2px;
+        }
+        
+        .tagged-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .tagged-item-label {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .tagged-item-type {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        
+        .tagged-item-type.lemma {
+            background: rgba(119, 125, 69, 0.2);
+            color: var(--color-lemma);
+        }
+        
+        .tagged-item-type.morpheme {
+            background: rgba(137, 170, 163, 0.2);
+            color: var(--color-morpheme);
+        }
+        
+        .tagged-item-units {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--color-acoustic);
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .tagged-item-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .tagged-item-delete {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px;
+        }
+        
+        .tagged-item-delete:hover {
+            color: var(--brand-terracotta);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* ============ NAVIGATION ============ */
+        .nav-row {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 16px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .nav-btn.secondary {
+            background: rgba(63, 62, 32, 0.1);
+            border: 1px solid rgba(63, 62, 32, 0.2);
+            color: var(--brand-green);
+        }
+        
+        .nav-btn.secondary:hover {
+            background: rgba(63, 62, 32, 0.15);
+        }
+        
+        .nav-btn.primary {
+            background: var(--brand-terracotta);
+            border: none;
+            color: white;
+        }
+        
+        .nav-btn.primary:hover {
+            background: #a54001;
+        }
+        
+        /* ============ RESULTS SCREEN ============ */
+        .results-screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 16px;
+        }
+        
+        .results-header {
+            text-align: center;
+            padding: 24px;
+        }
+        
+        .results-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        
+        .results-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-green);
+            margin-bottom: 8px;
+        }
+        
+        .results-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 24px 0;
+        }
+        
+        .result-stat {
+            text-align: center;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .result-stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--brand-terracotta);
+        }
+        
+        .result-stat-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .results-preview {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(63, 62, 32, 0.08);
+        }
+        
+        .results-preview-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--brand-green);
+        }
+        
+        .json-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            max-height: 400px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        
+        .results-actions {
+            display: flex;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ SETUP SCREEN ============ -->
+<div class="setup-screen" id="setupScreen">
+    <div class="setup-card">
+        <div class="setup-icon">🌉</div>
+        <div class="setup-title">AViTA Bridge</div>
+        <div class="setup-subtitle">
+            Connect meaning to sound.<br>
+            Tag audio regions and see the acoustic units that carry each meaning.
+        </div>
+        
+        <div class="bridge-diagram">
+            <div class="bridge-box semantic">Meaning<br><small>evidential, agent...</small></div>
+            <div class="bridge-arrow">↔</div>
+            <div class="bridge-box acoustic">Sound<br><small>U35_U97...</small></div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Language Name</label>
+            <input type="text" class="form-input" id="languageName" placeholder="e.g., Sateré-Mawé">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="userName" placeholder="Facilitator name">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Acoustic Units File (from Colab)</label>
+            <div class="file-drop" id="unitsFileDrop" onclick="document.getElementById('unitsFileInput').click()">
+                <div class="file-drop-icon">📄</div>
+                <div class="file-drop-text">Click or drop acoustic_units.json</div>
+                <div class="file-drop-name" id="unitsFileName"></div>
+            </div>
+            <input type="file" id="unitsFileInput" accept=".json" style="display:none" onchange="handleUnitsFile(this)">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Audio Segments Folder</label>
+            <div class="file-drop" id="audioFileDrop" onclick="document.getElementById('audioFileInput').click()">
+                <div class="file-drop-icon">🎵</div>
+                <div class="file-drop-text">Click to select audio files (.wav or .mp3)</div>
+                <div class="file-drop-name" id="audioFileName"></div>
+            </div>
+            <input type="file" id="audioFileInput" accept="audio/*" multiple style="display:none" onchange="handleAudioFiles(this)">
+        </div>
+        
+        <button class="start-btn" id="startBtn" onclick="startSession()" disabled>
+            Start Tagging →
+        </button>
+        
+        <div class="demo-link">
+            <a onclick="loadDemoData()">Or load demo data to try it out</a>
+        </div>
+    </div>
+</div>
+
+<!-- ============ TAGGING SCREEN ============ -->
+<div id="taggingScreen" class="hidden">
+    <header class="header">
+        <div class="logo">
+            🌉 AViTA Bridge
+            <span class="logo-badge">Sound ↔ Meaning</span>
+        </div>
+        <div class="segment-nav">
+            <button onclick="prevSegment()" id="prevBtn">◀</button>
+            <span class="segment-info" id="segmentInfo">1 / 10</span>
+            <button onclick="nextSegment()" id="nextBtn">▶</button>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <!-- Audio Player -->
+        <div class="audio-card">
+            <div class="segment-header">
+                <div class="segment-title" id="segmentTitle">Segment 1</div>
+                <div class="segment-duration" id="segmentDuration">0.00s</div>
+            </div>
+            
+            <div class="audio-controls">
+                <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+                <button class="play-btn" onclick="togglePlay()">
+                    <div class="play-icon" id="playIcon"></div>
+                </button>
+                <button class="speed-btn" id="speedBtn" onclick="toggleSpeed()">1×</button>
+            </div>
+        </div>
+        
+        <!-- THE BRIDGE: Waveform + Units -->
+        <div class="bridge-container">
+            <div class="bridge-title">
+                <span class="bridge-title-icon">🌉</span>
+                The Bridge: Select a region to tag
+            </div>
+            
+            <!-- Waveform with selection -->
+            <div class="waveform-container" id="waveformContainer">
+                <div class="waveform-bars" id="waveformBars"></div>
+                <div class="playhead" id="playhead" style="left: 0%;"></div>
+                <!-- Tagged regions will be added here -->
+                <!-- Selection region will be added here -->
+            </div>
+            
+            <!-- Acoustic unit track -->
+            <div class="unit-track" id="unitTrack">
+                <!-- Units will be rendered here -->
+            </div>
+            
+            <div class="time-markers">
+                <span>0:00</span>
+                <span id="endTimeMarker">0:00</span>
+            </div>
+        </div>
+        
+        <!-- Tagging Panel (appears after selection) -->
+        <div class="tagging-panel" id="taggingPanel">
+            <div class="selection-info-row">
+                <div class="selection-stat">
+                    <div class="selection-stat-label">Time Range</div>
+                    <div class="selection-stat-value" id="selectionTime">0.00s - 0.00s</div>
+                </div>
+                <div class="selection-stat" style="flex: 1;">
+                    <div class="selection-stat-label">Acoustic Units</div>
+                    <div class="selection-stat-value units" id="selectionUnits">-</div>
+                </div>
+                <button class="play-selection-btn" onclick="playSelection()">
+                    ▶ Play Selection
+                </button>
+            </div>
+            
+            <div class="semantic-question">
+                <div class="semantic-question-label">
+                    <span>💭</span> Semantic Question
+                </div>
+                <div class="semantic-question-text">
+                    What meaning does this sound carry?
+                </div>
+            </div>
+            
+            <div class="type-toggle">
+                <button class="type-btn lemma active" id="typeLemmaBtn" onclick="setTagType('lemma')">
+                    <div class="type-btn-icon">📦</div>
+                    <div class="type-btn-label">Lemma (content word)</div>
+                </button>
+                <button class="type-btn morpheme" id="typeMorphemeBtn" onclick="setTagType('morpheme')">
+                    <div class="type-btn-icon">🔗</div>
+                    <div class="type-btn-label">Morpheme (grammatical)</div>
+                </button>
+            </div>
+            
+            <!-- Morpheme palette -->
+            <div class="morpheme-palette" id="morphemePalette">
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Quantity</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('singular')">singular</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('dual')">dual</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('plural')">plural</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('collective')">collective</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Time Frame</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('past')">past</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('present')">present</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('future')">future</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('habitual')">habitual</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Evidentiality</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('witnessed')">witnessed</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('reported')">reported</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('inferred')">inferred</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('assumed')">assumed</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Aspect</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('completed')">completed</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('ongoing')">ongoing</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('inchoative')">inchoative</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('cessative')">cessative</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Polarity</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('affirmative')">affirmative</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('negative')">negative</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Valency</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('causative')">causative</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('applicative')">applicative</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('reciprocal')">reciprocal</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('reflexive')">reflexive</button>
+                    </div>
+                </div>
+                <div class="morpheme-section">
+                    <div class="morpheme-section-label">Deixis</div>
+                    <div class="morpheme-btns">
+                        <button class="morpheme-btn" onclick="selectMorpheme('proximal')">proximal</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('distal')">distal</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('speaker_ref')">speaker_ref</button>
+                        <button class="morpheme-btn" onclick="selectMorpheme('addressee_ref')">addressee_ref</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="label-input-row">
+                <input type="text" class="label-input" id="labelInput" placeholder="Type the concept label...">
+                <button class="add-tag-btn" onclick="addTag()">+ Add Tag</button>
+            </div>
+        </div>
+        
+        <!-- Tagged items list -->
+        <div class="tagged-list">
+            <div class="tagged-list-header">
+                <div class="tagged-list-title">🏷️ Tagged in this segment</div>
+                <div class="tagged-count" id="taggedCount">0 items</div>
+            </div>
+            <div class="tagged-items" id="taggedItems">
+                <div class="empty-state">
+                    Select a region on the waveform to start tagging
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-row">
+            <button class="nav-btn secondary" onclick="prevSegment()">← Previous</button>
+            <button class="nav-btn primary" onclick="nextSegment()">
+                Next Segment →
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ RESULTS SCREEN ============ -->
+<div class="results-screen" id="resultsScreen">
+    <header class="header">
+        <div class="logo">
+            🌉 AViTA Bridge
+            <span class="logo-badge">Results</span>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="results-header">
+            <div class="results-icon">✅</div>
+            <div class="results-title">Bridge Complete!</div>
+            <div class="results-subtitle">
+                Sound and meaning are now connected
+            </div>
+        </div>
+        
+        <div class="results-stats">
+            <div class="result-stat">
+                <div class="result-stat-value" id="totalSegments">0</div>
+                <div class="result-stat-label">Segments</div>
+            </div>
+            <div class="result-stat">
+                <div class="result-stat-value" id="totalTags">0</div>
+                <div class="result-stat-label">Tags</div>
+            </div>
+            <div class="result-stat">
+                <div class="result-stat-value" id="uniqueUnits">0</div>
+                <div class="result-stat-label">Unique Unit Patterns</div>
+            </div>
+        </div>
+        
+        <div class="results-preview">
+            <div class="results-preview-title">Export Preview (Sound ↔ Meaning Pairs)</div>
+            <div class="json-preview" id="jsonPreview"></div>
+        </div>
+        
+        <div class="results-actions">
+            <button class="nav-btn secondary" onclick="location.reload()">Start Over</button>
+            <button class="nav-btn primary" onclick="downloadResults()">📥 Download JSON</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============ DATA STRUCTURES ============
+let acousticUnits = null;  // { segments: [{ segment_id, units: [{unit, start_ms, end_ms}...] }] }
+let audioFiles = {};       // { segment_id: File or URL }
+let segments = [];         // [{ id, duration, units: [...] }]
+let annotations = {};      // { segment_id: [{ label, type, start_ms, end_ms, units: [...] }] }
+
+let currentSegIdx = 0;
+let currentTagType = 'lemma';
+let selectionStart = null;
+let selectionEnd = null;
+
+let audio = new Audio();
+let isPlaying = false;
+let playbackSpeed = 1;
+
+// ============ FILE HANDLING ============
+function handleUnitsFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            acousticUnits = JSON.parse(e.target.result);
+            document.getElementById('unitsFileDrop').classList.add('has-file');
+            document.getElementById('unitsFileName').textContent = file.name;
+            checkReadyToStart();
+        } catch (err) {
+            alert('Invalid JSON file. Please upload the acoustic_units.json from Colab.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function handleAudioFiles(input) {
+    const files = input.files;
+    if (!files.length) return;
+    
+    audioFiles = {};
+    for (let file of files) {
+        // Extract segment ID from filename (e.g., "segment_0.wav" -> 0)
+        const match = file.name.match(/segment[_-]?(\d+)/i);
+        if (match) {
+            audioFiles[parseInt(match[1])] = file;
+        }
+    }
+    
+    document.getElementById('audioFileDrop').classList.add('has-file');
+    document.getElementById('audioFileName').textContent = `${Object.keys(audioFiles).length} audio files loaded`;
+    checkReadyToStart();
+}
+
+function checkReadyToStart() {
+    const hasUnits = acousticUnits !== null;
+    const hasAudio = Object.keys(audioFiles).length > 0;
+    document.getElementById('startBtn').disabled = !(hasUnits || hasAudio);
+}
+
+// ============ DEMO DATA ============
+function loadDemoData() {
+    // Generate demo acoustic units based on our motif data
+    acousticUnits = {
+        segments: [
+            {
+                segment_id: 0,
+                duration_ms: 3000,
+                units: generateDemoUnits(3000)
+            },
+            {
+                segment_id: 1,
+                duration_ms: 4000,
+                units: generateDemoUnits(4000)
+            },
+            {
+                segment_id: 2,
+                duration_ms: 3500,
+                units: generateDemoUnits(3500)
+            },
+            {
+                segment_id: 3,
+                duration_ms: 2800,
+                units: generateDemoUnits(2800)
+            },
+            {
+                segment_id: 4,
+                duration_ms: 3200,
+                units: generateDemoUnits(3200)
+            }
+        ]
+    };
+    
+    document.getElementById('languageName').value = 'Sateré-Mawé (Demo)';
+    document.getElementById('userName').value = 'Demo User';
+    document.getElementById('unitsFileDrop').classList.add('has-file');
+    document.getElementById('unitsFileName').textContent = 'demo_units.json (generated)';
+    document.getElementById('startBtn').disabled = false;
+}
+
+function generateDemoUnits(durationMs) {
+    const units = [];
+    const unitTypes = ['U02', 'U04', 'U11', 'U13', 'U25', 'U32', 'U33', 'U35', 'U36', 'U41', 
+                       'U43', 'U47', 'U48', 'U55', 'U59', 'U62', 'U68', 'U74', 'U77', 'U79',
+                       'U81', 'U82', 'U83', 'U84', 'U91', 'U92', 'U97', 'U98'];
+    
+    let currentMs = 0;
+    const unitDuration = 20; // ~20ms per unit (like HuBERT frames)
+    
+    while (currentMs < durationMs) {
+        const unit = unitTypes[Math.floor(Math.random() * unitTypes.length)];
+        units.push({
+            unit: unit,
+            start_ms: currentMs,
+            end_ms: Math.min(currentMs + unitDuration, durationMs)
+        });
+        currentMs += unitDuration;
+    }
+    
+    return units;
+}
+
+// ============ SESSION START ============
+function startSession() {
+    // Build segments array from acoustic units
+    if (acousticUnits && acousticUnits.segments) {
+        segments = acousticUnits.segments.map(seg => ({
+            id: seg.segment_id,
+            duration: seg.duration_ms / 1000,
+            units: seg.units
+        }));
+    } else {
+        // Fallback: create from audio files
+        segments = Object.keys(audioFiles).map(id => ({
+            id: parseInt(id),
+            duration: 3, // Default, will be updated when audio loads
+            units: []
+        }));
+    }
+    
+    if (segments.length === 0) {
+        alert('No segments found. Please load acoustic units or audio files.');
+        return;
+    }
+    
+    // Initialize annotations
+    segments.forEach(seg => {
+        annotations[seg.id] = [];
+    });
+    
+    // Switch screens
+    document.getElementById('setupScreen').classList.add('hidden');
+    document.getElementById('taggingScreen').classList.remove('hidden');
+    
+    // Initialize
+    initWaveform();
+    loadSegment(0);
+}
+
+// ============ WAVEFORM ============
+function initWaveform() {
+    const container = document.getElementById('waveformBars');
+    const barCount = 100;
+    let html = '';
+    
+    for (let i = 0; i < barCount; i++) {
+        const h = 15 + Math.random() * 70;
+        html += `<div class="waveform-bar" style="height: ${h}%;"></div>`;
+    }
+    container.innerHTML = html;
+    
+    // Setup mouse events for selection
+    const waveformContainer = document.getElementById('waveformContainer');
+    waveformContainer.addEventListener('mousedown', handleWaveformMouseDown);
+    waveformContainer.addEventListener('mousemove', handleWaveformMouseMove);
+    waveformContainer.addEventListener('mouseup', handleWaveformMouseUp);
+    waveformContainer.addEventListener('mouseleave', handleWaveformMouseUp);
+    
+    // Touch events
+    waveformContainer.addEventListener('touchstart', handleWaveformTouchStart);
+    waveformContainer.addEventListener('touchmove', handleWaveformTouchMove);
+    waveformContainer.addEventListener('touchend', handleWaveformTouchEnd);
+}
+
+let isSelecting = false;
+
+function getWaveformPosition(e) {
+    const container = document.getElementById('waveformContainer');
+    const rect = container.getBoundingClientRect();
+    let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const x = clientX - rect.left;
+    return Math.max(0, Math.min(1, x / rect.width));
+}
+
+function handleWaveformMouseDown(e) {
+    if (e.target.closest('.tagged-region')) return;
+    isSelecting = true;
+    selectionStart = getWaveformPosition(e);
+    selectionEnd = selectionStart;
+    updateSelectionDisplay();
+}
+
+function handleWaveformMouseMove(e) {
+    if (!isSelecting) return;
+    selectionEnd = getWaveformPosition(e);
+    updateSelectionDisplay();
+}
+
+function handleWaveformMouseUp(e) {
+    if (!isSelecting) return;
+    isSelecting = false;
+    
+    // Ensure start < end
+    if (selectionStart > selectionEnd) {
+        [selectionStart, selectionEnd] = [selectionEnd, selectionStart];
+    }
+    
+    // Minimum selection
+    if (selectionEnd - selectionStart < 0.02) {
+        clearSelection();
+        return;
+    }
+    
+    showTaggingPanel();
+}
+
+function handleWaveformTouchStart(e) {
+    e.preventDefault();
+    handleWaveformMouseDown(e);
+}
+
+function handleWaveformTouchMove(e) {
+    e.preventDefault();
+    handleWaveformMouseMove(e);
+}
+
+function handleWaveformTouchEnd(e) {
+    handleWaveformMouseUp(e);
+}
+
+function updateSelectionDisplay() {
+    // Remove existing selection
+    const existing = document.getElementById('selectionRegion');
+    if (existing) existing.remove();
+    
+    if (selectionStart === null || selectionEnd === null) return;
+    
+    const left = Math.min(selectionStart, selectionEnd) * 100;
+    const width = Math.abs(selectionEnd - selectionStart) * 100;
+    
+    const selDiv = document.createElement('div');
+    selDiv.id = 'selectionRegion';
+    selDiv.className = 'selection-region';
+    selDiv.style.left = left + '%';
+    selDiv.style.width = width + '%';
+    
+    document.getElementById('waveformContainer').appendChild(selDiv);
+    
+    // Highlight units in selection
+    highlightUnitsInSelection();
+}
+
+function highlightUnitsInSelection() {
+    const seg = segments[currentSegIdx];
+    if (!seg.units || seg.units.length === 0) return;
+    
+    const duration = seg.duration * 1000; // Convert to ms
+    const startMs = Math.min(selectionStart, selectionEnd) * duration;
+    const endMs = Math.max(selectionStart, selectionEnd) * duration;
+    
+    document.querySelectorAll('.unit-chip').forEach((chip, idx) => {
+        const unit = seg.units[idx];
+        if (unit) {
+            const inSelection = unit.start_ms >= startMs && unit.end_ms <= endMs;
+            chip.classList.toggle('in-selection', inSelection);
+        }
+    });
+}
+
+function clearSelection() {
+    selectionStart = null;
+    selectionEnd = null;
+    
+    const existing = document.getElementById('selectionRegion');
+    if (existing) existing.remove();
+    
+    document.querySelectorAll('.unit-chip').forEach(chip => {
+        chip.classList.remove('in-selection');
+    });
+    
+    document.getElementById('taggingPanel').classList.remove('visible');
+    document.getElementById('labelInput').value = '';
+    document.querySelectorAll('.morpheme-btn').forEach(btn => btn.classList.remove('selected'));
+}
+
+// ============ TAGGING PANEL ============
+function showTaggingPanel() {
+    const panel = document.getElementById('taggingPanel');
+    panel.classList.add('visible');
+    
+    const seg = segments[currentSegIdx];
+    const duration = seg.duration;
+    
+    const startSec = Math.min(selectionStart, selectionEnd) * duration;
+    const endSec = Math.max(selectionStart, selectionEnd) * duration;
+    
+    document.getElementById('selectionTime').textContent = 
+        `${startSec.toFixed(2)}s - ${endSec.toFixed(2)}s`;
+    
+    // Get units in selection
+    const selectedUnits = getUnitsInSelection();
+    const unitStr = selectedUnits.map(u => u.unit).join('_');
+    document.getElementById('selectionUnits').textContent = unitStr || '(no units)';
+    
+    document.getElementById('labelInput').focus();
+}
+
+function getUnitsInSelection() {
+    const seg = segments[currentSegIdx];
+    if (!seg.units || seg.units.length === 0) return [];
+    
+    const duration = seg.duration * 1000;
+    const startMs = Math.min(selectionStart, selectionEnd) * duration;
+    const endMs = Math.max(selectionStart, selectionEnd) * duration;
+    
+    return seg.units.filter(u => u.start_ms >= startMs && u.end_ms <= endMs);
+}
+
+function setTagType(type) {
+    currentTagType = type;
+    
+    document.getElementById('typeLemmaBtn').classList.toggle('active', type === 'lemma');
+    document.getElementById('typeMorphemeBtn').classList.toggle('active', type === 'morpheme');
+    document.getElementById('morphemePalette').classList.toggle('visible', type === 'morpheme');
+    
+    document.getElementById('labelInput').placeholder = 
+        type === 'lemma' ? 'Type the concept label...' : 'Select or type morpheme...';
+}
+
+function selectMorpheme(morpheme) {
+    document.getElementById('labelInput').value = morpheme;
+    
+    document.querySelectorAll('.morpheme-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.textContent.trim() === morpheme);
+    });
+}
+
+function addTag() {
+    const label = document.getElementById('labelInput').value.trim();
+    if (!label) return;
+    if (selectionStart === null || selectionEnd === null) return;
+    
+    const seg = segments[currentSegIdx];
+    const duration = seg.duration * 1000;
+    const startMs = Math.round(Math.min(selectionStart, selectionEnd) * duration);
+    const endMs = Math.round(Math.max(selectionStart, selectionEnd) * duration);
+    
+    const selectedUnits = getUnitsInSelection();
+    
+    const tag = {
+        label: label,
+        type: currentTagType,
+        start_ms: startMs,
+        end_ms: endMs,
+        units: selectedUnits.map(u => u.unit),
+        unit_pattern: selectedUnits.map(u => u.unit).join('_')
+    };
+    
+    annotations[seg.id].push(tag);
+    
+    clearSelection();
+    renderTaggedRegions();
+    renderTaggedList();
+    
+    // Reset morpheme selection
+    document.querySelectorAll('.morpheme-btn').forEach(btn => btn.classList.remove('selected'));
+}
+
+function removeTag(index) {
+    const seg = segments[currentSegIdx];
+    annotations[seg.id].splice(index, 1);
+    renderTaggedRegions();
+    renderTaggedList();
+}
+
+function playSelection() {
+    if (selectionStart === null || selectionEnd === null) return;
+    
+    const seg = segments[currentSegIdx];
+    const startSec = Math.min(selectionStart, selectionEnd) * seg.duration;
+    const endSec = Math.max(selectionStart, selectionEnd) * seg.duration;
+    
+    // Try to play actual audio
+    if (audio.src && audio.readyState >= 2) {
+        audio.currentTime = startSec;
+        audio.play().catch(() => {});
+        
+        const checkEnd = setInterval(() => {
+            if (audio.currentTime >= endSec) {
+                audio.pause();
+                clearInterval(checkEnd);
+            }
+        }, 30);
+    } else {
+        // Visual simulation
+        simulatePlayback(startSec, endSec, seg.duration);
+    }
+}
+
+function simulatePlayback(startSec, endSec, totalDuration) {
+    const durationMs = (endSec - startSec) * 1000;
+    const startPercent = (startSec / totalDuration) * 100;
+    const endPercent = (endSec / totalDuration) * 100;
+    
+    const playhead = document.getElementById('playhead');
+    const startTime = Date.now();
+    
+    const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        const currentPercent = startPercent + (endPercent - startPercent) * progress;
+        
+        playhead.style.left = currentPercent + '%';
+        
+        if (progress >= 1) {
+            clearInterval(interval);
+        }
+    }, 30);
+}
+
+// ============ SEGMENT LOADING ============
+function loadSegment(idx) {
+    currentSegIdx = idx;
+    const seg = segments[idx];
+    
+    // Update UI
+    document.getElementById('segmentTitle').textContent = `Segment ${idx + 1}`;
+    document.getElementById('segmentInfo').textContent = `${idx + 1} / ${segments.length}`;
+    document.getElementById('segmentDuration').textContent = `${seg.duration.toFixed(2)}s`;
+    document.getElementById('endTimeMarker').textContent = formatTime(seg.duration);
+    
+    document.getElementById('prevBtn').disabled = idx === 0;
+    document.getElementById('nextBtn').disabled = idx === segments.length - 1;
+    
+    // Load audio if available
+    if (audioFiles[seg.id]) {
+        const file = audioFiles[seg.id];
+        if (file instanceof File) {
+            audio.src = URL.createObjectURL(file);
+        } else {
+            audio.src = file;
+        }
+        audio.playbackRate = playbackSpeed;
+    }
+    
+    // Render units
+    renderUnitTrack();
+    
+    // Render tagged regions
+    renderTaggedRegions();
+    renderTaggedList();
+    
+    // Clear selection
+    clearSelection();
+}
+
+function renderUnitTrack() {
+    const seg = segments[currentSegIdx];
+    const container = document.getElementById('unitTrack');
+    
+    if (!seg.units || seg.units.length === 0) {
+        container.innerHTML = '<span style="color: #888; font-size: 0.8rem;">No acoustic units loaded for this segment</span>';
+        return;
+    }
+    
+    // Show a subset of units (every Nth) to avoid overcrowding
+    const maxVisible = 60;
+    const step = Math.max(1, Math.floor(seg.units.length / maxVisible));
+    
+    let html = '';
+    for (let i = 0; i < seg.units.length; i += step) {
+        const u = seg.units[i];
+        html += `<div class="unit-chip" data-index="${i}" onclick="clickUnit(${i})">${u.unit}</div>`;
+    }
+    
+    container.innerHTML = html;
+}
+
+function clickUnit(index) {
+    const seg = segments[currentSegIdx];
+    const unit = seg.units[index];
+    
+    // Select this unit's time range
+    const duration = seg.duration * 1000;
+    selectionStart = unit.start_ms / duration;
+    selectionEnd = unit.end_ms / duration;
+    
+    updateSelectionDisplay();
+    showTaggingPanel();
+}
+
+function renderTaggedRegions() {
+    // Remove existing tagged regions
+    document.querySelectorAll('.tagged-region').forEach(el => el.remove());
+    
+    const seg = segments[currentSegIdx];
+    const tags = annotations[seg.id] || [];
+    const duration = seg.duration * 1000;
+    
+    const container = document.getElementById('waveformContainer');
+    
+    tags.forEach((tag, idx) => {
+        const left = (tag.start_ms / duration) * 100;
+        const width = ((tag.end_ms - tag.start_ms) / duration) * 100;
+        
+        const div = document.createElement('div');
+        div.className = `tagged-region ${tag.type}`;
+        div.style.left = left + '%';
+        div.style.width = width + '%';
+        div.innerHTML = `
+            ${tag.label}
+            <button class="delete-btn" onclick="event.stopPropagation(); removeTag(${idx})">×</button>
+        `;
+        div.onclick = () => playTagRegion(tag);
+        
+        container.appendChild(div);
+    });
+}
+
+function playTagRegion(tag) {
+    const seg = segments[currentSegIdx];
+    const startSec = tag.start_ms / 1000;
+    const endSec = tag.end_ms / 1000;
+    
+    if (audio.src && audio.readyState >= 2) {
+        audio.currentTime = startSec;
+        audio.play().catch(() => {});
+        
+        const checkEnd = setInterval(() => {
+            if (audio.currentTime >= endSec) {
+                audio.pause();
+                clearInterval(checkEnd);
+            }
+        }, 30);
+    } else {
+        simulatePlayback(startSec, endSec, seg.duration);
+    }
+}
+
+function renderTaggedList() {
+    const seg = segments[currentSegIdx];
+    const tags = annotations[seg.id] || [];
+    const container = document.getElementById('taggedItems');
+    
+    document.getElementById('taggedCount').textContent = `${tags.length} items`;
+    
+    if (tags.length === 0) {
+        container.innerHTML = '<div class="empty-state">Select a region on the waveform to start tagging</div>';
+        return;
+    }
+    
+    container.innerHTML = tags.map((tag, idx) => `
+        <div class="tagged-item">
+            <button class="tagged-item-play" onclick="playTagRegion(annotations[${seg.id}][${idx}])">
+                <div class="mini-play"></div>
+            </button>
+            <div class="tagged-item-info">
+                <div class="tagged-item-label">
+                    ${tag.label}
+                    <span class="tagged-item-type ${tag.type}">${tag.type}</span>
+                </div>
+                <div class="tagged-item-units">${tag.unit_pattern || '(no units)'}</div>
+            </div>
+            <div class="tagged-item-time">${(tag.start_ms/1000).toFixed(2)}s</div>
+            <button class="tagged-item-delete" onclick="removeTag(${idx})">×</button>
+        </div>
+    `).join('');
+}
+
+// ============ NAVIGATION ============
+function prevSegment() {
+    if (currentSegIdx > 0) {
+        loadSegment(currentSegIdx - 1);
+    }
+}
+
+function nextSegment() {
+    if (currentSegIdx < segments.length - 1) {
+        loadSegment(currentSegIdx + 1);
+    } else {
+        showResults();
+    }
+}
+
+// ============ AUDIO PLAYBACK ============
+function togglePlay() {
+    if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+    } else {
+        audio.play().catch(() => {
+            // No audio available - simulate
+            const seg = segments[currentSegIdx];
+            simulateFullPlayback(seg.duration);
+        });
+        isPlaying = true;
+    }
+    updatePlayIcon();
+}
+
+function simulateFullPlayback(duration) {
+    isPlaying = true;
+    updatePlayIcon();
+    
+    const playhead = document.getElementById('playhead');
+    const startTime = Date.now();
+    const durationMs = duration * 1000;
+    
+    const interval = setInterval(() => {
+        if (!isPlaying) {
+            clearInterval(interval);
+            return;
+        }
+        
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        
+        playhead.style.left = (progress * 100) + '%';
+        document.getElementById('timeDisplay').textContent = 
+            formatTime(elapsed / 1000) + ' / ' + formatTime(duration);
+        
+        if (progress >= 1) {
+            isPlaying = false;
+            updatePlayIcon();
+            clearInterval(interval);
+        }
+    }, 30);
+}
+
+function updatePlayIcon() {
+    document.getElementById('playIcon').className = isPlaying ? 'pause-icon' : 'play-icon';
+}
+
+function toggleSpeed() {
+    const speeds = [1, 0.75, 0.5];
+    const idx = speeds.indexOf(playbackSpeed);
+    playbackSpeed = speeds[(idx + 1) % speeds.length];
+    audio.playbackRate = playbackSpeed;
+    document.getElementById('speedBtn').textContent = playbackSpeed + '×';
+}
+
+audio.ontimeupdate = () => {
+    const time = audio.currentTime;
+    const duration = audio.duration || segments[currentSegIdx].duration;
+    
+    document.getElementById('timeDisplay').textContent = 
+        formatTime(time) + ' / ' + formatTime(duration);
+    
+    const progress = (time / duration) * 100;
+    document.getElementById('playhead').style.left = progress + '%';
+};
+
+audio.onended = () => {
+    isPlaying = false;
+    updatePlayIcon();
+};
+
+function formatTime(s) {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+}
+
+// ============ RESULTS ============
+function showResults() {
+    document.getElementById('taggingScreen').classList.add('hidden');
+    document.getElementById('resultsScreen').classList.remove('hidden');
+    document.getElementById('resultsScreen').style.display = 'flex';
+    
+    // Calculate stats
+    let totalTags = 0;
+    let uniquePatterns = new Set();
+    
+    Object.values(annotations).forEach(tags => {
+        totalTags += tags.length;
+        tags.forEach(t => {
+            if (t.unit_pattern) uniquePatterns.add(t.unit_pattern);
+        });
+    });
+    
+    document.getElementById('totalSegments').textContent = segments.length;
+    document.getElementById('totalTags').textContent = totalTags;
+    document.getElementById('uniqueUnits').textContent = uniquePatterns.size;
+    
+    // Generate export preview
+    const exportData = generateExportData();
+    document.getElementById('jsonPreview').textContent = JSON.stringify(exportData, null, 2);
+}
+
+function generateExportData() {
+    const language = document.getElementById('languageName').value || 'Unknown';
+    const user = document.getElementById('userName').value || 'Unknown';
+    
+    // Build sound-meaning pairs
+    const soundMeaningPairs = [];
+    
+    Object.entries(annotations).forEach(([segId, tags]) => {
+        tags.forEach(tag => {
+            soundMeaningPairs.push({
+                segment_id: parseInt(segId),
+                meaning: tag.label,
+                type: tag.type,
+                time_range: {
+                    start_ms: tag.start_ms,
+                    end_ms: tag.end_ms
+                },
+                acoustic_units: tag.units,
+                unit_pattern: tag.unit_pattern
+            });
+        });
+    });
+    
+    // Build pattern dictionary
+    const patternDictionary = {};
+    soundMeaningPairs.forEach(pair => {
+        if (!pair.unit_pattern) return;
+        
+        if (!patternDictionary[pair.unit_pattern]) {
+            patternDictionary[pair.unit_pattern] = {
+                meanings: [],
+                occurrences: 0
+            };
+        }
+        
+        patternDictionary[pair.unit_pattern].occurrences++;
+        if (!patternDictionary[pair.unit_pattern].meanings.includes(pair.meaning)) {
+            patternDictionary[pair.unit_pattern].meanings.push(pair.meaning);
+        }
+    });
+    
+    return {
+        export_type: 'sound_meaning_bridge',
+        export_date: new Date().toISOString(),
+        language: language,
+        facilitator: user,
+        summary: {
+            total_segments: segments.length,
+            total_tags: soundMeaningPairs.length,
+            unique_patterns: Object.keys(patternDictionary).length,
+            lemmas: soundMeaningPairs.filter(p => p.type === 'lemma').length,
+            morphemes: soundMeaningPairs.filter(p => p.type === 'morpheme').length
+        },
+        pattern_dictionary: patternDictionary,
+        sound_meaning_pairs: soundMeaningPairs,
+        segments: segments.map(seg => ({
+            segment_id: seg.id,
+            duration_ms: seg.duration * 1000,
+            unit_count: seg.units?.length || 0,
+            tags: annotations[seg.id] || []
+        }))
+    };
+}
+
+function downloadResults() {
+    const exportData = generateExportData();
+    const language = document.getElementById('languageName').value || 'data';
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sound_meaning_bridge_${language.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    
+    URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
